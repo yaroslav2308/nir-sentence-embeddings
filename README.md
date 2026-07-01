@@ -91,6 +91,7 @@ python scripts/run_experiment.py --n-per-class 10
 ```
 
 В Colab пакет `jupyter` устанавливать не нужно: он может обновить `jupyter-server` и создать конфликт с пакетом `google-colab`.
+Если до этого уже возникала ошибка загрузки Hugging Face dataset, после установки зависимостей перезапустите runtime и выполните ячейки заново.
 
 После этого можно открыть и выполнить `notebooks/01_experiments.ipynb`.
 

@@ -4,6 +4,7 @@ scikit-learn
 scipy
 matplotlib
 datasets
+huggingface_hub<1.0
 sentence-transformers
 transformers
 torch
