@@ -30,6 +30,7 @@
 4. Для каждой пары считается cosine similarity.
 5. Similarity сравнивается между классами NLI.
 6. Отдельно анализируются contradiction-пары с высокой similarity как потенциальные ошибки embedding-подхода.
+7. В контрольном блоке запускается NLI-модель, которая анализирует пару предложений совместно и предсказывает `entailment`, `neutral` или `contradiction`.
 
 ## Структура репозитория
 
@@ -102,6 +103,7 @@ python scripts/run_experiment.py --n-per-class 10
 - `sentence-transformers/paraphrase-multilingual-mpnet-base-v2` — более тяжелая мультиязычная модель.
 - `intfloat/multilingual-e5-base` — дополнительная модель, если понадобится.
 - `ai-forever/ru-en-RoSBERTa` — русскоязычная embedding-модель, если она корректно запускается через `sentence-transformers` или `transformers`.
+- `cointegrated/rubert-base-cased-nli-threeway` — контрольная NLI-модель для прямой классификации отношений между `premise` и `hypothesis`.
 
 Не обязательно запускать все модели сразу. Для стартового эксперимента достаточно TF-IDF и одной SentenceTransformer-модели.
 
@@ -112,6 +114,8 @@ python scripts/run_experiment.py --n-per-class 10
 - Delta между средним similarity для `entailment` и `contradiction`.
 - ROC-AUC для бинарного различения `entailment` против `contradiction`.
 - Ручной анализ contradiction-пар с высокой cosine similarity.
+- Accuracy, Macro-F1, classification report и confusion matrix для NLI-модели.
+- ROC-AUC для NLI-score `p_entailment - p_contradiction`.
 
 ## Ожидаемые артефакты
 
@@ -120,5 +124,14 @@ python scripts/run_experiment.py --n-per-class 10
 - `results.csv` — таблица с исходными парами, признаками и similarity.
 - `similarity_by_label.png` — график распределения cosine similarity по классам.
 - `high_similarity_contradictions.csv` — примеры contradiction-пар с высокой cosine similarity.
+- `results_with_nli.csv` — полный dataframe с similarity и NLI-колонками.
+- `roc_comparison.csv` и `roc_auc_comparison.png` — сравнение TF-IDF, SentenceTransformer и NLI по ROC-AUC.
+- `nli_confusion_matrix.csv` и `nli_confusion_matrix.png` — confusion matrix для NLI-модели.
+- `nli_classification_report.csv` — classification report для NLI-модели.
+- `st_high_nli_correct_contradictions.csv` — contradiction-пары с высокой ST similarity, где NLI правильно предсказала contradiction.
+- `both_failed_high_similarity_contradictions.csv` — contradiction-пары с высокой ST similarity, где NLI тоже ошиблась.
+- `high_similarity_contradictions_nli_pred_summary.csv` — сводка NLI-предсказаний для contradiction-пар с высокой ST similarity.
 
 Дополнительные выводы и интерпретацию результатов можно сохранять в `reports/`.
+
+NLI-блок интерпретируется как контроль специализированного подхода: если он лучше распознает contradiction-пары с высокой embedding similarity, это показывает ограничение cosine similarity как самостоятельного признака логического противоречия.

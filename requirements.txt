@@ -8,6 +8,8 @@ huggingface_hub<1.0
 sentence-transformers
 transformers
 torch
+sentencepiece
+accelerate
 tqdm
 jupyter
 ipywidgets
