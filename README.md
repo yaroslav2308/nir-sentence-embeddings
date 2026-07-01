@@ -84,12 +84,13 @@ python scripts/run_experiment.py --n-per-class 10
 В начале notebook выполните:
 
 ```python
-!git clone https://github.com/<YOUR_GITHUB_USERNAME>/nir-sentence-embeddings.git
+!git clone https://github.com/yaroslav2308/nir-sentence-embeddings.git
 %cd nir-sentence-embeddings
-!pip install -r requirements.txt
+!grep -v "^jupyter$" requirements.txt > /tmp/requirements-colab.txt
+!pip install -r /tmp/requirements-colab.txt
 ```
 
-Замените `<YOUR_GITHUB_USERNAME>` на реальный GitHub username.
+В Colab пакет `jupyter` устанавливать не нужно: он может обновить `jupyter-server` и создать конфликт с пакетом `google-colab`.
 
 После этого можно открыть и выполнить `notebooks/01_experiments.ipynb`.
 
