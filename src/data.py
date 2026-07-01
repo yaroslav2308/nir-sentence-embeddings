@@ -39,11 +39,29 @@ def _normalize_label(value: object, label_names: list[str] | None) -> str:
         raise ValueError(f"Cannot normalize label value: {value!r}") from exc
 
 
+def _extract_ru_text(value: object) -> str:
+    """Extract Russian text from XNLI fields across possible dataset formats."""
+    if isinstance(value, str):
+        return value
+
+    if isinstance(value, dict):
+        if "ru" in value:
+            return str(value["ru"])
+        languages = value.get("language")
+        translations = value.get("translation")
+        if isinstance(languages, list) and isinstance(translations, list) and "ru" in languages:
+            return str(translations[languages.index("ru")])
+
+    if pd.isna(value):
+        return ""
+    return str(value)
+
+
 def load_xnli_ru(split: str = "validation") -> pd.DataFrame:
     """Load the Russian part of XNLI and return premise, hypothesis, label columns."""
     from datasets import load_dataset
 
-    dataset = load_dataset("xnli", "ru", split=split)
+    dataset = load_dataset("facebook/xnli", "ru", split=split)
     label_names = _extract_label_names(dataset.features)
 
     df = dataset.to_pandas()
@@ -53,6 +71,8 @@ def load_xnli_ru(split: str = "validation") -> pd.DataFrame:
         raise ValueError(f"XNLI dataset is missing columns: {missing_columns}")
 
     result = df[required_columns].copy()
+    result["premise"] = result["premise"].apply(_extract_ru_text)
+    result["hypothesis"] = result["hypothesis"].apply(_extract_ru_text)
     result["label"] = result["label"].apply(lambda value: _normalize_label(value, label_names))
     return result
 
